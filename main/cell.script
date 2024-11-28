@@ -1,0 +1,87 @@
+local camera_orto = require("orthographic.camera")
+
+go.property("state", 0)
+go.property("is_right_cell", false)
+
+local function set_style_by_state(state)
+    if state == _G.cell_state.EMPTY then
+        sprite.play_flipbook("#sprite", "cell")
+    elseif state == _G.cell_state.RIGHT then
+        sprite.play_flipbook("#sprite", "right_cell")
+    elseif state == _G.cell_state.FAIL then
+        sprite.play_flipbook("#sprite", "fail_cell")
+    end
+end
+
+local function pick(self, touch_pos)
+	local size = go.get("#sprite", "size")
+	local world_pos = camera_orto.screen_to_world(hash("/camera"), touch_pos)
+	local go_world_pos = go.get_world_position()
+	if world_pos.x >= (go_world_pos.x - size.x / 2) and world_pos.x <= (go_world_pos.x + size.x / 2) then
+		if world_pos.y >= (go_world_pos.y - size.y / 2) and world_pos.y <= (go_world_pos.y + size.y / 2) then
+			return true
+		end
+	end
+	return false
+end 
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    set_style_by_state(self.state)
+    self.clickable = false
+    self.click_block = false
+
+    self.on_level_pause_handler = function ()
+       self.click_block = true
+    end
+
+    self.on_level_resume_handler = function ()
+        self.click_block = false
+    end
+
+    event_bus.EVENT_BUS:subscribe(GAME_STATE.EVENTS.on_level_pause, self.on_level_pause_handler)
+	event_bus.EVENT_BUS:subscribe(GAME_STATE.EVENTS.on_level_resume, self.on_level_resume_handler)
+end
+
+function final(self)
+    msg.post(".", "release_input_focus")
+    event_bus.EVENT_BUS:unsubscribe(GAME_STATE.EVENTS.on_level_pause, self.on_level_pause_handler)
+	event_bus.EVENT_BUS:unsubscribe(GAME_STATE.EVENTS.on_level_resume, self.on_level_resume_handler)
+    self.on_level_pause_handler = nil
+    self.on_level_resume_handler = nil
+end
+
+function on_input(self, action_id, action)
+	if not self.clickable then return end
+    if self.click_block then return end
+    if action_id == hash("touch") and action.pressed then
+        if pick(self, vmath.vector3(action.x, action.y, 0)) then
+			if self.is_right_cell then
+                self.state = _G.cell_state.RIGHT
+            else
+                self.state = _G.cell_state.FAIL
+            end
+            set_style_by_state(self.state)
+            self.clickable = false
+            msg.post("grid", "on_click_cell")
+		end
+    end
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("show_is_right_cell") then
+        if self.is_right_cell then
+            set_style_by_state(_G.cell_state.RIGHT)
+        else
+            set_style_by_state(_G.cell_state.EMPTY)
+        end
+    end
+
+    if message_id == hash("hide_is_right_cell") then
+        set_style_by_state(self.state)
+    end
+
+    if message_id == hash("give_the_player_control") then
+        self.clickable = true
+    end
+end

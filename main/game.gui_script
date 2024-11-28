@@ -1,0 +1,82 @@
+local druid = require("druid.druid")
+local GAME_STATE = require('main.game_state')
+
+local function on_pause_button_click()
+	if GAME_STATE.IS_PAUSED then
+		gui.set_texture(gui.get_node('pause'), 'gui')
+		gui.play_flipbook(gui.get_node('pause'), 'pause_button')
+		msg.post("bootstrap:/bootstrap", "resume_level")
+		gui.set_enabled(gui.get_node("pause_window"), false)
+	else
+		gui.set_texture(gui.get_node('pause'), 'gui')
+		gui.play_flipbook(gui.get_node('pause'), 'play_button')
+		msg.post("bootstrap:/bootstrap", "pause_level")
+		gui.set_enabled(gui.get_node("pause_window"), true)
+	end
+end
+
+local function on_back_button_click()
+end
+
+local function on_restart_button_click()
+end
+
+local function on_exit_button_click()
+end
+
+local function on_about_game_button_click()
+end
+
+local function on_complete_show_animation()
+	msg.post("bootstrap:/bootstrap", "next_level")	
+end
+
+local function show_end_window(is_win)
+	gui.set_enabled(gui.get_node("end_level_window"), true)
+	if is_win then
+		gui.set_texture(gui.get_node('level_light'), 'gui')
+		gui.play_flipbook(gui.get_node('level_light'), 'done_level')
+		gui.animate(gui.get_node("level_light"), gui.PROP_POSITION, vmath.vector3(0, 0, 0), gui.EASING_OUTELASTIC, 1.5, 0, on_complete_show_animation)
+	else
+		gui.set_texture(gui.get_node('level_light'), 'gui')
+		gui.play_flipbook(gui.get_node('level_light'), 'lose_level')
+		gui.animate(gui.get_node("level_light"), gui.PROP_POSITION, vmath.vector3(0, 0, 0), gui.EASING_OUTELASTIC, 1.5, 0, on_complete_show_animation)
+	end
+end
+
+function init(self)
+	self.is_paused = false
+	self.druid = druid.new(self)
+	self.pause_button = self.druid:new_button('pause', on_pause_button_click)
+	self.end_level_window = self.druid:new_blocker('end_level_window')
+	self.end_level_window:set_enabled(true)
+	self.back_button = self.druid:new_button('back_button', on_back_button_click)
+	self.restart_button_pause_window = self.druid:new_button('restart_button_pause_window', on_restart_button_click)
+	self.exit_button = self.druid:new_button('exit_button', on_exit_button_click)
+	self.about_game_button = self.druid:new_button('about_game_button', on_about_game_button_click)
+end
+
+function final(self)
+	self.druid:final()
+end
+
+function update(self, dt)
+	self.druid:update(dt)
+end
+
+function on_message(self, message_id, message, sender)
+	self.druid:on_message(message_id, message, sender)
+	if message_id == hash("win_level") then
+		msg.post("bootstrap:/bootstrap", "pause_level")
+		show_end_window(true)
+	end
+
+	if message_id == hash("lose_level") then
+		msg.post("bootstrap:/bootstrap", "pause_level")
+		show_end_window(false)
+	end
+end
+
+function on_input(self, action_id, action)
+	self.druid:on_input(action_id, action)
+end

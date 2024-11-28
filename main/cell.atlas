@@ -1,0 +1,10 @@
+images {
+  image: "/resources/images/cell.png"
+}
+images {
+  image: "/resources/images/fail_cell.png"
+}
+images {
+  image: "/resources/images/right_cell.png"
+}
+extrude_borders: 2

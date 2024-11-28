@@ -1,0 +1,40 @@
+images {
+  image: "/resources/images/grid_remember_me.png"
+}
+images {
+  image: "/resources/images/pause_button.png"
+}
+images {
+  image: "/resources/images/top_background.png"
+}
+images {
+  image: "/resources/images/play_button.png"
+}
+images {
+  image: "/resources/images/pause_background.png"
+}
+images {
+  image: "/resources/images/pause_icon.png"
+}
+images {
+  image: "/resources/images/button_background.png"
+}
+images {
+  image: "/resources/images/about_game_button.png"
+}
+images {
+  image: "/resources/images/back_button.png"
+}
+images {
+  image: "/resources/images/exit_button.png"
+}
+images {
+  image: "/resources/images/restart_button.png"
+}
+images {
+  image: "/resources/images/done_level.png"
+}
+images {
+  image: "/resources/images/lose_level.png"
+}
+extrude_borders: 2

@@ -1,0 +1,366 @@
+script: "/main/game.gui_script"
+fonts {
+  name: "always_on_top"
+  font: "/builtins/fonts/debug/always_on_top.font"
+}
+fonts {
+  name: "default"
+  font: "/builtins/fonts/default.font"
+}
+fonts {
+  name: "text_bold"
+  font: "/druid/fonts/text_bold.font"
+}
+fonts {
+  name: "text_regular"
+  font: "/druid/fonts/text_regular.font"
+}
+fonts {
+  name: "rubick_light"
+  font: "/resources/fonts/rubick_light.font"
+}
+textures {
+  name: "gui"
+  texture: "/main/gui.atlas"
+}
+nodes {
+  position {
+    x: 600.0
+    y: 2000.0
+    z: 0.1
+  }
+  type: TYPE_BOX
+  texture: "gui/top_background"
+  id: "top"
+  yanchor: YANCHOR_TOP
+  pivot: PIVOT_N
+  adjust_mode: ADJUST_MODE_STRETCH
+  layer: "l2"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -100.0
+  }
+  type: TYPE_BOX
+  texture: "gui/pause_button"
+  id: "pause"
+  xanchor: XANCHOR_LEFT
+  yanchor: YANCHOR_TOP
+  parent: "top"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 600.0
+    y: 1000.0
+  }
+  size {
+    x: 1200.0
+    y: 2000.0
+  }
+  type: TYPE_BOX
+  texture: "gui/pause_background"
+  id: "pause_window"
+  adjust_mode: ADJUST_MODE_STRETCH
+  layer: "l1"
+  inherit_alpha: true
+  enabled: false
+}
+nodes {
+  type: TYPE_BOX
+  texture: "gui/pause_icon"
+  id: "pause_icon"
+  parent: "pause_window"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 3.0
+    y: -110.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.925
+    y: 0.941
+    z: 0.945
+  }
+  type: TYPE_TEXT
+  text: "\320\277\320\260\321\203\320\267\320\260"
+  font: "rubick_light"
+  id: "pause_text"
+  parent: "pause_window"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -450.0
+  }
+  size {
+    x: 374.0
+    y: 390.0
+  }
+  type: TYPE_BOX
+  id: "buttons"
+  parent: "pause_window"
+  inherit_alpha: true
+  alpha: 0.0
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 150.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  texture: "gui/button_background"
+  id: "back_button"
+  parent: "buttons"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -146.0
+  }
+  type: TYPE_BOX
+  texture: "gui/back_button"
+  id: "icon1"
+  parent: "back_button"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.584
+    y: 0.647
+    z: 0.651
+  }
+  type: TYPE_TEXT
+  text: "\320\262\320\265\321\200\320\275\321\203\321\202\321\214\321\201\321\217"
+  font: "rubick_light"
+  id: "text1"
+  pivot: PIVOT_W
+  parent: "back_button"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 50.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  texture: "gui/button_background"
+  id: "restart_button_pause_window"
+  parent: "buttons"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -146.0
+  }
+  type: TYPE_BOX
+  texture: "gui/restart_button"
+  id: "icon2"
+  parent: "restart_button_pause_window"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.584
+    y: 0.647
+    z: 0.651
+  }
+  type: TYPE_TEXT
+  text: "\320\267\320\260\320\275\320\276\320\262\320\276"
+  font: "rubick_light"
+  id: "text2"
+  pivot: PIVOT_W
+  parent: "restart_button_pause_window"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -50.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  texture: "gui/button_background"
+  id: "exit_button"
+  parent: "buttons"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -146.0
+  }
+  type: TYPE_BOX
+  texture: "gui/exit_button"
+  id: "icon3"
+  parent: "exit_button"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.584
+    y: 0.647
+    z: 0.651
+  }
+  type: TYPE_TEXT
+  text: "\320\262\321\213\320\271\321\202\320\270"
+  font: "rubick_light"
+  id: "text3"
+  pivot: PIVOT_W
+  parent: "exit_button"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -150.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  texture: "gui/button_background"
+  id: "about_game_button"
+  parent: "buttons"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -146.0
+  }
+  type: TYPE_BOX
+  texture: "gui/about_game_button"
+  id: "icon4"
+  parent: "about_game_button"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.584
+    y: 0.647
+    z: 0.651
+  }
+  type: TYPE_TEXT
+  text: "\320\272\320\260\320\272 \320\270\320\263\321\200\320\260\321\202\321\214"
+  font: "rubick_light"
+  id: "text4"
+  pivot: PIVOT_W
+  parent: "about_game_button"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 600.0
+    y: 1000.0
+  }
+  size {
+    x: 1200.0
+    y: 2000.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "end_level_window"
+  adjust_mode: ADJUST_MODE_STRETCH
+  layer: "l3"
+  inherit_alpha: true
+  alpha: 0.5
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+}
+nodes {
+  position {
+    y: 2000.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "level_light"
+  parent: "end_level_window"
+  size_mode: SIZE_MODE_AUTO
+}
+layers {
+  name: "l1"
+}
+layers {
+  name: "l2"
+}
+layers {
+  name: "l3"
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

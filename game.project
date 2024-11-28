@@ -1,0 +1,31 @@
+[bootstrap]
+main_collection = /main/bootstrap.collectionc
+render = /orthographic/render/orthographic.renderc
+
+[script]
+shared_state = 1
+
+[display]
+width = 1200
+height = 2000
+high_dpi = 1
+
+[android]
+input_method = HiddenInputField
+
+[html5]
+scale_mode = stretch
+
+[project]
+title = RememberMe
+dependencies#0 = https://github.com/britzl/defold-orthographic/archive/master.zip
+dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/1.0.zip
+
+[render]
+clear_color_red = 0.2039
+clear_color_green = 0.2862
+clear_color_blue = 0.3686
+
+[collection]
+max_input_stack_entries = 32
+
