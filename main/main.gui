@@ -319,6 +319,18 @@ nodes {
 }
 nodes {
   position {
+    y: 600.0
+  }
+  type: TYPE_BOX
+  texture: "gui/pause_background_2"
+  id: "top_background"
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "pause_window"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
     x: 600.0
     y: 1000.0
   }
@@ -341,8 +353,9 @@ nodes {
   enabled: false
 }
 nodes {
-  position {
-    y: 2000.0
+  scale {
+    x: 1.0E-6
+    y: 1.0E-6
   }
   size {
     x: 200.0

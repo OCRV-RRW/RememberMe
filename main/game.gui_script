@@ -28,7 +28,7 @@ local function on_about_game_button_click()
 end
 
 local function on_complete_show_animation()
-	msg.post("bootstrap:/bootstrap", "next_level")	
+	msg.post("bootstrap:/bootstrap", "finish_level")
 end
 
 local function show_end_window(is_win)
@@ -36,11 +36,11 @@ local function show_end_window(is_win)
 	if is_win then
 		gui.set_texture(gui.get_node('level_light'), 'gui')
 		gui.play_flipbook(gui.get_node('level_light'), 'done_level')
-		gui.animate(gui.get_node("level_light"), gui.PROP_POSITION, vmath.vector3(0, 0, 0), gui.EASING_OUTELASTIC, 1.5, 0, on_complete_show_animation)
+		gui.animate(gui.get_node("level_light"), gui.PROP_SCALE, vmath.vector3(1, 1, 0), gui.EASING_OUTELASTIC, 1, 0, on_complete_show_animation)
 	else
 		gui.set_texture(gui.get_node('level_light'), 'gui')
 		gui.play_flipbook(gui.get_node('level_light'), 'lose_level')
-		gui.animate(gui.get_node("level_light"), gui.PROP_POSITION, vmath.vector3(0, 0, 0), gui.EASING_OUTELASTIC, 1.5, 0, on_complete_show_animation)
+		gui.animate(gui.get_node("level_light"), gui.PROP_SCALE, vmath.vector3(1, 1, 0), gui.EASING_OUTELASTIC, 1, 0, on_complete_show_animation)
 	end
 end
 

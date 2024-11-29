@@ -7,4 +7,7 @@ images {
 images {
   image: "/resources/images/right_cell.png"
 }
+images {
+  image: "/resources/images/not_clicked_right_cell.png"
+}
 extrude_borders: 2

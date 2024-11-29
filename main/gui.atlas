@@ -37,4 +37,7 @@ images {
 images {
   image: "/resources/images/lose_level.png"
 }
+images {
+  image: "/resources/images/pause_background_2.png"
+}
 extrude_borders: 2

@@ -18,7 +18,9 @@ function on_message(self, message_id, message, sender)
 	end
 
 	if message_id == hash("finish_level") then
-		GAME_STATE.set_is_finished(true)
+		msg.post("#levelproxy", "disable")
+		msg.post("#levelproxy", "final")
+		msg.post("#levelproxy", "unload")
 	end
 
 	if message_id == hash("proxy_loaded") then
@@ -29,18 +31,11 @@ function on_message(self, message_id, message, sender)
         msg.post("#levelproxy", "load")
     end
 
-	if message_id == hash("restart_level") then
-		GAME_STATE.set_is_paused(false)
-		msg.post("#levelproxy", "disable")
-		msg.post("#levelproxy", "final")
-		msg.post("#levelproxy", "unload")
-		GAME_STATE.set_level(GAME_STATE.LEVEL)
-	end
-
-	if message_id == hash("next_level") then
-		GAME_STATE.set_is_paused(false)
-		msg.post("#levelproxy", "disable")
-		msg.post("#levelproxy", "final")
-		msg.post("#levelproxy", "unload")
+	if message_id == hash("update_level") then
+		if message.level > 7 then
+			GAME_STATE.set_level(GAME_STATE.LEVEL)
+		else
+			GAME_STATE.set_level(message.level)
+		end
 	end
 end

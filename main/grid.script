@@ -2,11 +2,11 @@ local cell_state = require("main.cell_state")
 local event_bus = require("main.event_bus_module")
 local factory_component = "#cell_factory"
 local GAME_STATE = require('main.game_state')
+local GAME_SETTINGS = require('main.game_settings')
 
 go.property("width", 0)
 go.property("height", 0)
-go.property("first_state_time", 0)
-go.property("second_state_time", 0)
+go.property("pre_prepare_state_time", 0)
 
 local function check_state(self, cell)
 	local state = go.get(cell, "state")
@@ -19,11 +19,50 @@ local function check_state(self, cell)
 	end
 
 	if self.count_is_right_cells == self.cells_is_right_count then
+		msg.post("bootstrap:/bootstrap", "update_level", {level = GAME_STATE.LEVEL + 1})
 		msg.post("/gui", "win_level")
 	end
-	
+
 	if self.count_is_fail_cells > self.cells_is_fail_count then
-		msg.post("/gui", "lose_level")
+		_G.grid_courutine = coroutine.create(function ()
+			msg.post("/gui", "lose_level")
+		end)
+		for _, cell in ipairs(self.cells) do
+			msg.post(cell, "set_not_clicked_right_cell")
+		end
+		msg.post("bootstrap:/bootstrap", "update_level", {level = GAME_STATE.LEVEL})
+	end
+end
+
+local function validate_is_right_cells_count(self)
+	while self.cells_is_right_count == 0 do
+		for _, cell in ipairs(self.cells) do
+			local is_right_cell = go.get(msg.url(nil, cell, "cell"), "is_right_cell")
+			if is_right_cell == false then
+				if self.set_is_right_cell() == true then
+					go.set(msg.url(nil, cell, "cell"), "is_right_cell", true)
+					break
+				end
+			end
+		end
+	end
+
+	local difference = GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).max_count_right_cells - self.cells_is_right_count
+	if difference <= 0 then
+		local is_right_cells = {}
+		for _, cell in ipairs(self.cells) do
+			local is_right_cell = go.get(msg.url(nil, cell, "cell"), "is_right_cell")
+			if is_right_cell == true then
+				table.insert(is_right_cells, cell)
+			end
+		end
+
+		for _ = 1, math.abs(difference) do
+			local random_cell_idx = math.random(#is_right_cells)
+			go.set(msg.url(nil, is_right_cells[random_cell_idx], "cell"), "is_right_cell", false)
+			table.remove(is_right_cells, random_cell_idx)
+			self.cells_is_right_count = self.cells_is_right_count - 1
+		end
 	end
 end
 
@@ -47,11 +86,11 @@ function init(self)
 		return false
 	end
 
-	for i = 1, self.width do
-		for j = 1, self.height do
+	for i = 1, GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).level_count_cells.x do
+		for j = 1, GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).level_count_cells.y do
 			local spawn_pos = go.get_position() - 
-				vmath.vector3(((self.width + 1) / 2 * 150) + (i * 150 * -1), 
-					((self.height + 1) * 150 / 2 * -1) + (j * 150), 
+				vmath.vector3(((GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).level_count_cells.x + 1) / 2 * 150) + (i * 150 * -1), 
+					((GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).level_count_cells.y + 1) * 150 / 2 * -1) + (j * 150), 
 					0)
 			local cell = factory.create(factory_component,
 				vmath.vector3(spawn_pos),
@@ -60,10 +99,13 @@ function init(self)
 					state = _G.cell_state.EMPTY,
 					is_right_cell = self.set_is_right_cell()
 				})
-			self.cells_is_fail_count = math.floor(self.cells_is_right_count / 4)
 			table.insert(self.cells, cell)
 		end
 	end
+
+	validate_is_right_cells_count(self)
+
+	self.cells_is_fail_count = math.floor(self.cells_is_right_count / 4)
 	self.time = 0
 	self.time_increase = 1
 
@@ -75,16 +117,21 @@ function init(self)
 		self.time_increase = 1
 	end
 
+	self.on_change_level_handler = function ()
+    end
 	event_bus.EVENT_BUS:subscribe(GAME_STATE.EVENTS.on_level_pause, self.on_level_pause_handler)
 	event_bus.EVENT_BUS:subscribe(GAME_STATE.EVENTS.on_level_resume, self.on_level_resume_handler)
+	event_bus.EVENT_BUS:subscribe(GAME_STATE.EVENTS.on_change_level, self.on_change_level_handler)
 end
 
 function final(self)
 	self.time = 0
 	event_bus.EVENT_BUS:unsubscribe(GAME_STATE.EVENTS.on_level_pause, self.on_level_pause_handler)
 	event_bus.EVENT_BUS:unsubscribe(GAME_STATE.EVENTS.on_level_resume, self.on_level_resume_handler)
+	event_bus.EVENT_BUS:unsubscribe(GAME_STATE.EVENTS.on_change_level, self.on_change_level_handler)
 	self.on_level_pause_handler = nil
 	self.on_level_resume_handler = nil
+	self.on_change_level_handler = nil
 	self.set_is_right_cell = nil
 	self.cells = {}
 	self.cells_is_right_count = 0
@@ -93,7 +140,8 @@ end
 
 function update(self, dt)
 	self.time = self.time + (dt * self.time_increase)
-	if self.time >= self.first_state_time and self.is_first_state then
+
+	if self.time >= self.pre_prepare_state_time and self.is_first_state then
 		self.is_first_state = false
 		self.is_second_state = true
 		for _, cell in ipairs(self.cells) do
@@ -101,7 +149,7 @@ function update(self, dt)
 		end
 	end
 
-	if self.time >= self.first_state_time + self.second_state_time and self.is_second_state then
+	if self.time >= self.pre_prepare_state_time + GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).prepare_time and self.is_second_state then
 		for _, cell in ipairs(self.cells) do
 			msg.post(cell, "hide_is_right_cell")
 			msg.post(cell, "give_the_player_control")
