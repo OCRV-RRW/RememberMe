@@ -1,5 +1,6 @@
 local druid = require("druid.druid")
 local GAME_STATE = require('main.game_state')
+local animations_queue = require("main.modules.animation_queue_module")
 
 local function on_pause_button_click()
 	if GAME_STATE.IS_PAUSED then
@@ -27,21 +28,15 @@ end
 local function on_about_game_button_click()
 end
 
-local function on_complete_show_animation()
-	msg.post("bootstrap:/bootstrap", "finish_level")
-end
-
 local function show_end_window(is_win)
 	gui.set_enabled(gui.get_node("end_level_window"), true)
+	gui.set_texture(gui.get_node('level_light'), 'gui')
 	if is_win then
-		gui.set_texture(gui.get_node('level_light'), 'gui')
 		gui.play_flipbook(gui.get_node('level_light'), 'done_level')
-		gui.animate(gui.get_node("level_light"), gui.PROP_SCALE, vmath.vector3(1, 1, 0), gui.EASING_OUTELASTIC, 1, 0, on_complete_show_animation)
 	else
-		gui.set_texture(gui.get_node('level_light'), 'gui')
 		gui.play_flipbook(gui.get_node('level_light'), 'lose_level')
-		gui.animate(gui.get_node("level_light"), gui.PROP_SCALE, vmath.vector3(1, 1, 0), gui.EASING_OUTELASTIC, 1, 0, on_complete_show_animation)
 	end
+	gui.animate(gui.get_node("level_light"), gui.PROP_SCALE, vmath.vector3(1, 1, 0), gui.EASING_OUTELASTIC, 1, 0, animations_queue.animation_queue.on_animation_complete)
 end
 
 function init(self)
@@ -66,13 +61,11 @@ end
 
 function on_message(self, message_id, message, sender)
 	self.druid:on_message(message_id, message, sender)
-	if message_id == hash("win_level") then
-		msg.post("bootstrap:/bootstrap", "pause_level")
+	if message_id == hash("win_level_animation") then
 		show_end_window(true)
 	end
 
-	if message_id == hash("lose_level") then
-		msg.post("bootstrap:/bootstrap", "pause_level")
+	if message_id == hash("lose_level_animation") then
 		show_end_window(false)
 	end
 end

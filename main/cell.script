@@ -1,4 +1,5 @@
 local camera_orto = require("orthographic.camera")
+local animations_queue = require("main.modules.animation_queue_module")
 go.property("state", 0)
 go.property("is_right_cell", false)
 
@@ -15,17 +16,9 @@ local function set_sprite(state)
 end
 
 local function set_style_by_state(state)
-    on_second_animation_complete = function ()
-        if state == _G.cell_state.NOT_CLICKED_IS_RIGHT then
-            if coroutine.status(_G.grid_courutine ) == "suspended" then
-                coroutine.resume(_G.grid_courutine )
-            end
-        end
-    end
-
     on_animation_complete = function ()
         set_sprite(state)
-        go.animate("#sprite", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 0), go.EASING_LINEAR, .2, 0, on_second_animation_complete)
+        go.animate("#sprite", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 0), go.EASING_LINEAR, .2, 0, animations_queue.animation_queue.on_animation_complete)
     end
 
     go.animate("#sprite", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(0, 0, 0), go.EASING_LINEAR, .2, 0, on_animation_complete)
@@ -79,7 +72,9 @@ function on_input(self, action_id, action)
             else
                 self.state = _G.cell_state.FAIL
             end
-            set_style_by_state(self.state)
+            animations_queue.animation_queue:add_animation(coroutine.create(function ()
+				set_style_by_state(self.state)
+			end), 1)
             self.clickable = false
             msg.post("grid", "on_click_cell")
 		end
@@ -101,12 +96,15 @@ function on_message(self, message_id, message, sender)
 
     if message_id == hash("give_the_player_control") then
         self.clickable = true
+        animations_queue.animation_queue.on_animation_complete()
     end
 
     if message_id == hash("set_not_clicked_right_cell") then
         if self.state == _G.cell_state.EMPTY and self.is_right_cell then    
             self.state = _G.cell_state.NOT_CLICKED_IS_RIGHT
             set_style_by_state(self.state)
+        else
+            animations_queue.animation_queue.on_animation_complete()
         end
     end
 end

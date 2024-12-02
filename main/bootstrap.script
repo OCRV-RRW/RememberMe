@@ -25,10 +25,12 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("proxy_loaded") then
         msg.post(sender, "enable")
+		GAME_STATE.set_is_paused(false)
     end
 
 	if message_id == hash("proxy_unloaded") then
         msg.post("#levelproxy", "load")
+		GAME_STATE.set_is_paused(true)
     end
 
 	if message_id == hash("update_level") then

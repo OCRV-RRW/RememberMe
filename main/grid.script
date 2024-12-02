@@ -3,6 +3,7 @@ local event_bus = require("main.event_bus_module")
 local factory_component = "#cell_factory"
 local GAME_STATE = require('main.game_state')
 local GAME_SETTINGS = require('main.game_settings')
+local animations_queue = require("main.modules.animation_queue_module")
 
 go.property("width", 0)
 go.property("height", 0)
@@ -19,18 +20,32 @@ local function check_state(self, cell)
 	end
 
 	if self.count_is_right_cells == self.cells_is_right_count then
+		msg.post("bootstrap:/bootstrap", "pause_level")
 		msg.post("bootstrap:/bootstrap", "update_level", {level = GAME_STATE.LEVEL + 1})
-		msg.post("/gui", "win_level")
+		animations_queue.animation_queue:add_animation(coroutine.create(function ()
+			msg.post("/gui", "win_level_animation")
+		end), 2)
+		animations_queue.animation_queue:add_animation(coroutine.create(function ()
+			msg.post("bootstrap:/bootstrap", "finish_level")
+			animations_queue.animation_queue.on_animation_complete()
+		end), 3)
 	end
 
 	if self.count_is_fail_cells > self.cells_is_fail_count then
-		_G.grid_courutine = coroutine.create(function ()
-			msg.post("/gui", "lose_level")
-		end)
+		msg.post("bootstrap:/bootstrap", "pause_level")
 		for _, cell in ipairs(self.cells) do
-			msg.post(cell, "set_not_clicked_right_cell")
+			animations_queue.animation_queue:add_animation(coroutine.create(function ()
+				msg.post(cell, "set_not_clicked_right_cell")
+			end), 1)
 		end
 		msg.post("bootstrap:/bootstrap", "update_level", {level = GAME_STATE.LEVEL})
+		animations_queue.animation_queue:add_animation(coroutine.create(function ()
+			msg.post("/gui", "lose_level_animation")
+		end), 2)
+		animations_queue.animation_queue:add_animation(coroutine.create(function ()
+			msg.post("bootstrap:/bootstrap", "finish_level")
+			animations_queue.animation_queue.on_animation_complete()
+		end), 3)
 	end
 end
 
@@ -145,14 +160,20 @@ function update(self, dt)
 		self.is_first_state = false
 		self.is_second_state = true
 		for _, cell in ipairs(self.cells) do
-			msg.post(cell, "show_is_right_cell")
+			animations_queue.animation_queue:add_animation(coroutine.create(function ()
+				msg.post(cell, "show_is_right_cell")
+			end), 1)
 		end
 	end
 
 	if self.time >= self.pre_prepare_state_time + GAME_SETTINGS:get_settings(GAME_STATE.LEVEL).prepare_time and self.is_second_state then
 		for _, cell in ipairs(self.cells) do
-			msg.post(cell, "hide_is_right_cell")
-			msg.post(cell, "give_the_player_control")
+			animations_queue.animation_queue:add_animation(coroutine.create(function ()
+				msg.post(cell, "hide_is_right_cell")
+			end), 1)
+			animations_queue.animation_queue:add_animation(coroutine.create(function ()
+				msg.post(cell, "give_the_player_control")
+			end), 2)
 		end
 		self.is_second_state = false
 	end
