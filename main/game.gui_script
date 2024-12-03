@@ -28,6 +28,21 @@ end
 local function on_about_game_button_click()
 end
 
+local function set_timer(value)
+	if gui.get_text(gui.get_node("timer_value")) ~= tostring(value) then
+		gui.set_text(gui.get_node("timer_value"), tostring(value))
+	end
+	animations_queue.animation_queue.on_animation_complete()
+end
+
+local function hide_timer()
+	local on_animation_complete = function ()
+		gui.set_enabled(gui.get_node("timer"), false)
+		animations_queue.animation_queue.on_animation_complete()
+	end
+	gui.animate(gui.get_node("timer"), gui.PROP_SCALE, vmath.vector3(0, 0, 0), gui.EASING_INQUAD, 0.4, 0, on_animation_complete)
+end
+
 local function show_end_window(is_win)
 	gui.set_enabled(gui.get_node("end_level_window"), true)
 	gui.set_texture(gui.get_node('level_light'), 'gui')
@@ -67,6 +82,20 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("lose_level_animation") then
 		show_end_window(false)
+	end
+
+	if message_id == hash("hide_timer") then
+		if gui.is_enabled(gui.get_node("timer")) then	
+			hide_timer()
+		end
+		animations_queue.animation_queue.on_animation_complete()
+	end
+
+	if message_id == hash("update_timer") then
+		if not gui.is_enabled(gui.get_node("timer")) then
+			gui.set_enabled(gui.get_node("timer"), true)
+		end
+		set_timer(message.value)
 	end
 end
 

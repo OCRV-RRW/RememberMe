@@ -366,6 +366,32 @@ nodes {
   parent: "end_level_window"
   size_mode: SIZE_MODE_AUTO
 }
+nodes {
+  position {
+    x: 600.0
+    y: 950.0
+  }
+  type: TYPE_BOX
+  texture: "gui/timer_image"
+  id: "timer"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  scale {
+    x: 2.0
+    y: 2.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  font: "rubick_light"
+  id: "timer_value"
+  parent: "timer"
+  inherit_alpha: true
+}
 layers {
   name: "l1"
 }

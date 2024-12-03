@@ -155,10 +155,18 @@ end
 
 function update(self, dt)
 	self.time = self.time + (dt * self.time_increase)
+	if self.is_first_state then
+		animations_queue.animation_queue:add_animation(coroutine.create(function ()
+			msg.post("/gui", "update_timer", {value = math.floor(self.pre_prepare_state_time - self.time) + 1})
+		end), 1)
+	end
 
 	if self.time >= self.pre_prepare_state_time and self.is_first_state then
 		self.is_first_state = false
 		self.is_second_state = true
+		animations_queue.animation_queue:add_animation(coroutine.create(function ()
+			msg.post("/gui", "hide_timer")
+		end), 1)
 		for _, cell in ipairs(self.cells) do
 			animations_queue.animation_queue:add_animation(coroutine.create(function ()
 				msg.post(cell, "show_is_right_cell")

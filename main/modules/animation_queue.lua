@@ -4,7 +4,6 @@ Animation_queue = Object:extend()
 
 Animation_queue.start_animation = function ()
     local min_priority = Animation_queue.animations[1].priority
-    pprint(min_priority)
     for _, value in ipairs(Animation_queue.animations) do
         if value.priority == min_priority and 
             coroutine.status(value.animation) == "suspended" then
@@ -43,7 +42,7 @@ end
 ---@return
 ---| '"running"'
 ---| '"dead"'      
-function Animation_queue:status()
+function Animation_queue:get_status()
     if #Animation_queue.animations > 0 then
         return "running"
     else
