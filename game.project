@@ -22,7 +22,7 @@ dependencies#0 = https://github.com/britzl/defold-orthographic/archive/master.zi
 dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/1.0.zip
 
 [render]
-clear_color_red = 1.0
+clear_color_red = 0.2039
 clear_color_green = 0.2862
 clear_color_blue = 0.3686
 
