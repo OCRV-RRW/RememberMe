@@ -15,11 +15,16 @@ input_method = HiddenInputField
 
 [html5]
 scale_mode = stretch
+show_made_with_defold = 0
+show_fullscreen_button = 0
+cssfile = /builtins/manifests/web/dark_theme.css
+splash_image = /resources/images/logo.png
 
 [project]
 title = RememberMe
 dependencies#0 = https://github.com/britzl/defold-orthographic/archive/master.zip
 dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/1.0.zip
+dependencies#2 = https://github.com/britzl/deftest/archive/master.zip
 
 [render]
 clear_color_red = 0.2039

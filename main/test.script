@@ -1,0 +1,8 @@
+local deftest =  require 'deftest.deftest'
+local animation_queue_tests = require 'test.animation_queue_tests'
+
+function init(self)
+	deftest.add(animation_queue_tests)
+	deftest.run()
+end
+

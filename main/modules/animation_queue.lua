@@ -29,13 +29,13 @@ end
 ---@param animation thread
 ---@param priority integer
 function Animation_queue:add_animation(animation, priority)
-    table.insert(Animation_queue.animations, 
+    table.insert(self.animations,
         {
             animation = animation,
             priority = priority
         })
-    table.sort(Animation_queue.animations, Animation_queue.comparable)
-    Animation_queue.start_animation()
+    table.sort(self.animations, self.comparable)
+    self.start_animation()
 end
 
 
@@ -43,7 +43,7 @@ end
 ---| '"running"'
 ---| '"dead"'      
 function Animation_queue:get_status()
-    if #Animation_queue.animations > 0 then
+    if #self.animations > 0 then
         return "running"
     else
         return "dead"
